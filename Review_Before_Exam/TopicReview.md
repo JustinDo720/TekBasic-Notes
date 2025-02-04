@@ -39,6 +39,11 @@ Here's everything you need to know before the Placement Exam...
 - [RegEX](#python-regular-expression-)
 - [Starting Exceptions](#starting-exception-)
 
+### Jan 31 (T5)
+- [Class Variables](#python-class-variable-)
+- [Custom Exception](#custom-exception-)
+
+
 ---
 
 ## Python Features
@@ -827,3 +832,92 @@ finally:
 ```
 
 ---
+
+## Python Class Variable 
+
+Class **Variables** are **shared** throughout **instantiation**. We mainly use it to update each time an instance is
+created. These class variables **retain in memory**
+
+**Class** method vs **Static** methods vs **Instance** method 
+- Class methods have `@classmethod` **cls** instead of **self** and they primarily alter the class itself like *class variables* 
+- Static methods don't have cls or self they're just **helper** functions with `@staticmethod`
+- Instance methods are the ones that alter object attributes with **self** parameter
+
+You could use the class method anywhere in an **instance method** or the **constructor**. You access it with:
+`className.class_method()` like: `Counter.increment()`
+```python
+
+class Example:
+    class_variable = "I am a class variable"
+
+    def __init__(self, value):
+        self.instance_variable = value  # This is an instance variable
+
+    # Instance Method
+    def instance_method(self):
+        return f"Instance Method: {self.instance_variable}"
+
+    # Class Method
+    @classmethod
+    def class_method(cls):
+        return f"Class Method: {cls.class_variable}"
+
+    # Static Method
+    @staticmethod
+    def static_method():
+        return "Static Method: I don't use instance or class variables"
+
+```
+
+--- 
+
+## Custom Exception 
+
+*Base Exception* is the parent of all exceptions and you could use this to create our own **Custom Exception class**
+
+To bring up an exception without a custom class we could use `assert`:
+`assert (condition), "message if failed"`
+
+We simply **inherit** from the *Exception* class and raise that custom exception 
+
+```python
+class myCustomException(Exception):
+  pass 
+
+def myFunc(n):
+  if condition:
+    # Raising our own err
+    raise myCustomException('Error Message')
+
+# Since we raise an error we just catch it right 
+try:
+    myFunc(2)
+except Exception as e:
+    print(e)
+```
+
+We could also raise and intercept **twice** with **style** 
+
+```python
+from colorama import Fore,Style 
+
+class myCustomException(Exception):
+  pass 
+
+def myFunc(n):
+    try:
+      if condition:
+        # Raising our own err
+        raise myCustomException('Error Message')
+    except Exception as e:
+      # What this does is that ir raises an exception to the parent so now we handling this out of the scope of our func
+      raise e 
+    
+# Because we re-raise our exception we must catch it 
+try:
+  myFunc(2)
+except Exception as e:
+  # TO make it log a red color
+  print(Fore.RED + str(e) + Style.RESET_ALL)
+
+```
