@@ -33,6 +33,11 @@ Here's everything you need to know before the Placement Exam...
 - [Data Structures](#data-structures-)
 - [Beginning OOP](#starting-python-oop-)
 
+### Jan 30 (T4)
+- [5 Pillars of OOP](#oop-concepts-)
+- [MRO](#python-mro-method-resolution-order)
+- [RegEX](#python-regular-expression-)
+- [Starting Exceptions](#starting-exception-)
 
 ---
 
@@ -481,7 +486,7 @@ simpFunc()  # "Doing something before..." "my Func.." "Doing something after..."
 ## Generators 
 
 Similar to `range()`, but you can only use each value once, and they are produced one at a time, 
-instead of all being stored in memory at once.
+instead of all being stored in memory at once. **Lazy Loading**
 
 ```python
 myObj = ['a','b','c']
@@ -632,6 +637,193 @@ class Animal:
 
 # Creating the object
 logan = Animal('Logan', 'Husky')
+```
+
+---
+
+## OOP Concepts 
+
+**Abstraction** is where we focus on the **essential** features by using the `ABC` class and `abstractmethod` to map
+out what's necessary for our class.
+
+```python
+# Abstract class 
+from abc import ABC, abstractmethod
+
+class HouseABC(ABC):
+    # No __init__ constructor because we're not using this to build an object 
+    # Let's build getter and setter functions for House Name 
+    @abstractmethod
+    def setHouseName(self, house_name):
+        pass
+    
+    @abstractmethod
+    def getHouseName(self):
+        pass 
+
+
+class House(HouseABC):
+    # Constructor because we're using this class to build objects 
+    def __init__(self, name, size):
+        # Private Variables is Encapsulation, we'll take a look later 
+        self.__name = name
+        self.size = size
+
+    # This house CANNOT be completed without overriding our abstract methods 
+    def getHouseName(self):
+        return self.__name 
+
+    def setHouseName(self, house_name):
+        self.__name = house_name
+        return self.getHouseName()
+```
+
+**Encapsulation** 
+
+From the previous example we use `self.__name` which creates name as a **private variable** and could be accessed like:
+`obj._ModelName__name` 
+
+```python
+def __init__(self, name, size):
+        # Private Variables is Encapsulation, we'll take a look later 
+        self.__name = name
+        self.size = size
+```
+
+This helps use **protect** our data from being accessed directly. We also created **getter and setter functions**.
+
+```python
+# This house CANNOT be completed without overriding our abstract methods 
+def getHouseName(self):
+    return self.__name 
+
+def setHouseName(self, house_name):
+    self.__name = house_name
+    return self.getHouseName()
+```
+
+**Inheritance** 
+
+Our subclass (child class) gets properties/attributes from *Parent* including methods. This helps with **reusability**.
+We use `super().__init__()` to initialize the parent class 
+
+```python
+class Animal:
+    def __init__(self, name, breed):
+        self.__name = name 
+        self.breed = breed
+
+    def make_sound(self):
+        return self.__name + ' is making noise'
+
+class Dog(Animal):
+    def __init__(self, name, breed, age):
+        # Initialize parent class
+        super().__init__(name, breed)
+        # Our child Property 
+        self.age = age
+
+muffin = Dog('Muff', 'German Shep', 3)
+muffin.make_sound() # We have access to this method because Dog inherited by Animal
+```
+
+**Polymorphism**
+
+The idea that objects could behave **differently** but have the **same** methods. We could also customize their function
+based on what **class they belong to*. We could check with `isinstance(obj, Class)`
+
+```python
+class Animal:
+    def __init__(self, name, breed):
+        self.__name = name 
+        self.breed = breed
+
+    def make_sound(self):
+        return self.__name + ' is making noise'
+    
+class Cat(Animal):
+    def __init__(self, name, breed, age):
+        # Initialize parent class
+        super().__init__(name, breed)
+        # Our child Property 
+        self.age = age
+
+Bean = Cat('Bean', 'tux', 2)
+
+# Using muffin from last example 
+both_animals = [muffin, Bean]
+for animal in both_animals:
+    # The idea is that, these are two different objects but we could loop through them to run the same function
+    animal.make_sound()
+```
+
+---
+
+## Python MRO (Method Resolution Order)
+
+We don't go into-depth but `super()` is the key and `mro()` to see the inheritance order. But It mainly reads 
+*Current* -> *Left* -> *Right* -> *Parent*
+
+---
+
+## Python Regular Expression 
+
+We use **patterns** with **search functions**. Let's look at the search functions before patterns:
+**Must import re** for regular expression
+1) `re.match(pattern, str)` --> Match the beginning ONLY 
+2) `re.search(pattern, str)` --> First occurrence ONLY 
+3) `re.findall(pattern, str)` --> Lists of ALL occurrences (mostly used)
+
+Constructing a pattern always start with a **raw string**: `r'pattern_here'`
+- `[ ]` Look for certain characters within **range** 
+  - `[a-zA-Z0-9]` Searches for any letter a-z lower and upper and any digits 0-9
+- `+` is for **many** characters (group) while `.` is for **single**
+  - `[a-zA-Z0-9]+` Mainly for **one or more** of these values 
+- `{n}` for a **number** of these values 
+  - `[a-zA-Z0-9]{6}` Mainly for **6** of these values 
+- `|` for **or**
+- `^` **Beginning**
+- `$` **End**
+- `\.` Escape character so like here we're **escaping** period 
+
+```python
+import re 
+
+pattern = r'[a-zA-Z0-9_.+-]+@[a-zA-Z]+\.[a-zA-Z]+'
+result = re.findall(pattern, 'hello6 world1 hello554 admin@gmail.com JavaScript 12 ')
+print(result)
+```
+
+---
+
+## Starting Exception 
+
+We use `try except else finally` block to catch errors in our code to **continue its runtime**
+
+```python
+def divide(a,b):
+    return a//b
+
+# Starting your try block
+try:
+    my_division = divide(1,0)
+except ZeroDivisionError as e:
+    # We know we cannot divide our 0 so we'll end up here
+    print(e)
+    
+
+# Successful run 
+try:
+    my_division = divide(1,1)
+except Exception as e:
+    # We won't hit this block because 1/1 is fine
+    print(e)
+else:
+    # Since our try block is successful 
+    print(my_division)
+finally:
+    # Regardless of outcome 
+    print('Printing regardless of outcome (Always hit this block of code)')
 ```
 
 ---
