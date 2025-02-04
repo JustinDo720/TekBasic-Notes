@@ -20,6 +20,19 @@ Here's everything you need to know before the Placement Exam...
 - [Slicing](#slicing-)
 - [DS Functions](#python-sequence-functions)
 
+### Jan 29 (T3)
+- [String Interpolation](#string-interpolation-)
+- [String Functions](#string-functions-)
+- [Hashmap](#hashmap-)
+  - Shallow vs Deep Copy
+- [Overloading Arg](#overloading-function-arguments)
+- [Anonymous Functions](#anonymous-function-)
+- [Decorators](#decorators-)
+- [Generators](#generators-)
+- [Dictionary Comp](#dictionary-comp-)
+- [Data Structures](#data-structures-)
+- [Beginning OOP](#starting-python-oop-)
+
 
 ---
 
@@ -311,5 +324,314 @@ a2,a3 = a3, a2  # Swapping
 **Functions** with a **list/mutable** **parameter**
 - If your parameter has a list/mutable, it will **continually** affect that list regardless of the times it's used
 
+---
 
+## String Interpolation 
 
+Formatting strings with **F Strings**, using `.format(var1, var2)` or `% (var1,var2)`
+
+```python
+name, age = "justin", 20
+
+print(f'I am an F string: {name} {age}')
+print("I am formatting: {0} {1}".format(name, age))
+print('I am interpolation s for string d for digits: %s %d' % (name, age))
+
+```
+
+---
+
+## String Functions 
+
+When in doubt use `dir(var)` to check all the built-in functions for it but here's a view:
+1) `.title()` makes sure we have Upper case on all words
+2) `.upper()` for full upper case 
+3) `.lower()` for full lower case
+
+---
+
+## Hashmap 
+
+A python **dictionary** with **keys:values** pair 
+
+We could also combine dictionaries using the `d1 | d2` But it will be a **shallow copy**
+
+### Shallow vs Deep Copy 
+
+Shallow keeps the **reference** which means changing the new will change the **original**. Deep copy is **independent**
+meaning it will not change/affect the **original**
+- This only affects with **nested lists**
+
+```python
+d = {
+    'name': 'Justin',
+    'age': 20
+}
+
+d1 = {
+    'fav_food': 'Chicken',
+}
+
+d2 = d | d1     # Shallow Copy meaning changing d2 will change d/d1
+
+d2.popitem() # will give me fav_food because they're merged 
+```
+
+```python
+# Shallow vs Deep 
+import copy 
+
+l1 = [[3,2],1,2,3,4]
+l2 = copy.copy(l1)  # copies reference as well 
+# Changing the original will affect the shallow copy too 
+l1[0][0] = 2
+# Changing the new will affect the original too 
+l2[0][1] = 3
+
+l2 = copy.deepcopy(l1)
+# Changing the original will NOT affect the deep copy 
+l1[0][0] = 2
+# Changing the new will NOT affect the original. Only affecting the second copy
+l2[0][1] = 3
+```
+
+---
+
+## Overloading Function Arguments
+
+**overloading** just means we could take in an endless amount of **positional** and **keyword** arguments using `*args*`
+and `**kwargs`
+
+```python
+
+# *args is a tuple (we could access via index) 
+def myFunc(*args):
+    print(args[0])
+    
+# **kwargs is a dictionary 
+def myFunc(**kwargs):
+    print(kwargs.keys(), kwargs.values(), kwargs.get('key'))
+
+```
+
+--- 
+
+## Anonymous Function 
+
+**Lambda** is a quick function builder: `lambda arg1, arg2: return a+b` 
+
+We could **reuse** a lambda function by setting a variable to it otherwise 
+
+```python
+
+people = [
+    {"name": "Alice", "age": 25, "city": "New York"},
+    {"name": "Bob", "age": 30, "city": "San Francisco"},
+    {"name": "Charlie", "age": 22, "city": "Chicago"},
+    {"name": "David", "age": 35, "city": "Los Angeles"},
+    {"name": "Eve", "age": 28, "city": "Miami"}
+]
+
+# Using lambda to sort 
+# Sort in place if return new arry use sorted(people, key=lambda obj: obj['age'])
+people.sort(key=lambda obj: obj['age'])
+
+# The original way
+def age(obj):
+    return obj['age']
+
+sorted(people, key=age)
+
+# We could pass in some parameter on spot
+print((lambda x,y : x+y)(2,3))  # 5
+a = lambda x,y : x+y
+print(a(2,3))
+```
+
+## Decorators 
+
+The idea of *lambda* also introduces **callback functions** where we pass a function to be called **later**. 
+- We create a **decorator function** that takes a **function** as an argument
+- Inside the decorator function, we create a **wrapper** that uses the function in the argument 
+- Return that wrapper 
+
+```python
+
+def myDecorator(func1):
+    myVar = 'Decorator Scope'
+    def wrapper():
+        # To access myVar 
+        nonlocal myVar
+        myVar = 'Now Wrapper Scope'
+        print(myVar)
+        print('Doing something before running our function')
+        func1()
+        print('Doing something after our function')
+    return wrapper()
+
+@myDecorator
+def simpFunc():
+    print('My function')
+
+simpFunc()  # "Doing something before..." "my Func.." "Doing something after..."
+```
+
+---
+
+## Generators 
+
+Similar to `range()`, but you can only use each value once, and they are produced one at a time, 
+instead of all being stored in memory at once.
+
+```python
+myObj = ['a','b','c']
+def myGen():
+    # Instead of storing all myObj into memory it yields (returns) a value one at a time 
+    for obj in myObj:
+        yield obj
+    
+# Don't forget to set my generator to a variable (ensures to get the next value) 
+gen = myGen() 
+
+for obj in gen:
+    print(obj)
+
+```
+
+---
+
+## Dictionary Comp 
+
+We've seen **list comp** we could also make a dictionary comp. Also know that **nested dictionaries** exist
+
+```python
+
+myHashmap = {
+    'age': 10,
+    'num': 5,
+}
+
+# Let's double it 
+secondHash = {key:value**2 for key,value in myHashmap.items()}
+
+```
+
+---
+
+## Data Structures 
+
+**NamedTuple** --> name a couple tuples with **fields**
+
+```python
+from collections import namedtuple
+
+Game = namedtuple('Game', ['name', 'price', 'type'])
+
+batman = Game('Batman V3', 12.50, 'action')
+print(batman.name, batman.price, batman.type)
+
+```
+
+**Double Ended Queue** --> Queues we could work from the **left** side helping us achieve that **FIFO**
+
+```python
+from collections import deque
+
+my_queue = deque([1,2,3])
+# FIFO (1 is in so 1 should leave first) 
+my_queue.popleft()
+# We could also append left 
+my_queue.appendleft(5)
+
+```
+
+**ChainMap** --> Combining Big Dictionaries 
+
+```python
+from collections import ChainMap
+
+d1 = {
+    'k1': 'v1',
+    'k2': 'v2',
+    'k3': 'v3'
+}
+
+d2 = {
+    'k4': 'v4',
+    'k5': 'v5',
+    'k6': 'v6'
+}
+
+cm = ChainMap(d1,d2)    # Use this to look at both dictionaries at once
+cm['k6']
+```
+
+**Counter** --> Counting a certain occurrence 
+
+```python
+from collections import Counter
+
+l = ['a', 'b', 'c', 'd' 'a', 'a', 'b', 'c']
+cnt = Counter(l)
+print(cnt)  # All occurrences of each element 
+print(cnt['b'])     # Specific element 
+
+# Most common?
+print(cnt.most_common(2))
+
+```
+
+**Ordered Dictionary** --> Keeps track of order in which keys are pushed into dict 
+
+```python
+from collections import OrderedDict
+
+od = OrderedDict([('k1','v1'), ('k2', 'v2')])
+# od acts like a normal dictionary
+```
+
+**Default Dictionary** --> Doesn't raise KeyError by placing a **default** value 
+
+```python
+from collections import defaultdict
+
+dd = defaultdict(int)
+print(dd['A'])  # Default to 0 because int is our default
+
+```
+
+--- 
+
+## Starting Python OOP 
+
+Class are **blueprints** and objects are **instances** of that class meaning they carry *attributes* from that class.
+
+```python
+class Animal:
+    # Constructor 
+    def __init__(self, name, breed):
+        self.name = name 
+        self.breed = breed
+        
+    # Method 
+    def make_sound(self):
+        print(f'{self.name} is speaking...')
+    
+    # String representation 
+    def __str__(self):
+        return self.name + ' ' + self.breed
+    
+    # repr() for dev
+    def __repr__(self):
+        return f'Animal: {self.name} {self.breed}'
+
+    # cleaning up references in memory 
+    def __delete__(self, instance):
+        self.name = None 
+        self.breed = None 
+
+# Creating the object
+logan = Animal('Logan', 'Husky')
+```
+
+---
